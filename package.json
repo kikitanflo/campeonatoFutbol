@@ -1,0 +1,19 @@
+{
+  "name": "campeonato-futbol",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
+  },
+  "dependencies": {
+    "mysql2": "^3.9.7",
+    "bcryptjs": "^2.4.3"
+  },
+  "devDependencies": {
+    "nuxt": "latest"
+  }
+}
