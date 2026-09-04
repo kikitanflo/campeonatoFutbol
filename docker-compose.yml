@@ -11,6 +11,8 @@ services:
       - DB_USER=${DB_USER}
       - DB_PASS=${DB_PASS}
       - DB_NAME=${DB_NAME}
+    volumes:
+      - ./uploads:/app/.output/public/uploads
     depends_on:
       db:
         condition: service_healthy

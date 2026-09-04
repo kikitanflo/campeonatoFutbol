@@ -23,7 +23,10 @@ export default defineEventHandler(async (event) => {
   const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
   const uploadedPaths = [];
 
-  const publicDir = path.join(process.cwd(), 'public', 'uploads', 'sponsors');
+  const isProd = process.env.NODE_ENV === 'production';
+  const publicDir = isProd 
+    ? path.join(process.cwd(), '.output', 'public', 'uploads', 'sponsors') 
+    : path.join(process.cwd(), 'public', 'uploads', 'sponsors');
   if (!fs.existsSync(publicDir)) {
     fs.mkdirSync(publicDir, { recursive: true });
   }

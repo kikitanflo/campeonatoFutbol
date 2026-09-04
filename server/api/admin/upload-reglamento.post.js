@@ -33,7 +33,10 @@ export default defineEventHandler(async (event) => {
   }
 
   // Guardar en public/reglamento.pdf
-  const publicDir = path.join(process.cwd(), 'public');
+  const isProd = process.env.NODE_ENV === 'production';
+  const publicDir = isProd 
+    ? path.join(process.cwd(), '.output', 'public') 
+    : path.join(process.cwd(), 'public');
   if (!fs.existsSync(publicDir)) {
     fs.mkdirSync(publicDir, { recursive: true });
   }
