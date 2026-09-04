@@ -55,7 +55,7 @@
         </div>
 
         <div class="hero-content">
-          <h1 class="hero-title" v-html="formatHeroTitle(data?.configuracion?.hero_title)"></h1>
+          <!-- <h1 class="hero-title" v-html="formatHeroTitle(data?.configuracion?.hero_title)"></h1> -->
           <p class="hero-subtitle">{{ data?.configuracion?.hero_subtitle ?? 'Pasión, táctica y gloria en la cancha. El torneo más competitivo de la ciudad.' }}</p>
           <div class="hero-actions">
             <NuxtLink to="/posiciones" class="btn-glow" v-if="data?.configuracion?.hero_btn1_text !== ''">{{ data?.configuracion?.hero_btn1_text ?? 'Ver Posiciones' }} <i class="fas fa-trophy ml-2"></i></NuxtLink>

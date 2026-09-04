@@ -88,7 +88,7 @@ function getDashboardLink(rol) {
 }
 
 .logo-title {
-  font-size: 1.25rem;
+  font-size: 1rem;
   font-weight: 900;
   margin: 0;
   text-transform: uppercase;
@@ -99,7 +99,7 @@ function getDashboardLink(rol) {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 250px;
+  max-width: 400px;
 }
 
 .main-nav {
