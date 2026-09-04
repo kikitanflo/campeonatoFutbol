@@ -91,7 +91,8 @@ export default defineEventHandler(async (event) => {
       WHERE rol = 'dirigente' AND equipo_id IN (?, ?)
     `, [partido.equipo_local_id, partido.equipo_visitante_id]);
 
-    // 5. Construir y enviar el reporte a cada dirigente
+    // 5. Construir los enlaces de WhatsApp para cada dirigente
+    const enlacesWhatsApp = [];
     for (const dirigente of dirigentes) {
       if (!dirigente.telefono) continue;
 
@@ -118,10 +119,14 @@ export default defineEventHandler(async (event) => {
 
       reporte += `_Generado automáticamente por el Sistema Arbitral_`;
 
-      await enviarMensajeWhatsApp(dirigente.telefono, reporte);
+      enlacesWhatsApp.push({
+        equipo: nombreEquipoDirigente,
+        telefono: dirigente.telefono,
+        mensaje: reporte
+      });
     }
 
-    return { success: true, message: 'Partido finalizado y reportes enviados' };
+    return { success: true, message: 'Partido finalizado y reportes enviados', enlacesWhatsApp };
 
   } catch (error) {
     console.error('Error al finalizar partido:', error);

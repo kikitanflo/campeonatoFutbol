@@ -11,6 +11,19 @@
 
     <div v-if="pending" class="text-center mt-4">Cargando planilla...</div>
     
+    <div v-else-if="enlacesWhatsApp.length > 0" class="whatsapp-share-container card text-center mt-4" style="padding: 2rem;">
+      <h3 style="color: #10b981; font-size: 1.5rem; margin-bottom: 1rem;">🟢 ¡Partido Finalizado!</h3>
+      <p>El partido se cerró correctamente. Ahora haz clic en cada botón para abrir tu WhatsApp y enviar el informe a los dirigentes:</p>
+      
+      <div style="display: flex; gap: 1rem; justify-content: center; margin: 2rem 0; flex-wrap: wrap;">
+        <button v-for="(enlace, i) in enlacesWhatsApp" :key="i" class="btn-whatsapp" @click="abrirWhatsApp(enlace)">
+          📲 Enviar a {{ enlace.equipo }}
+        </button>
+      </div>
+      
+      <button class="btn-secondary mt-4" @click="router.push('/arbitro')" style="padding: 0.5rem 2rem;">Volver al Panel de Árbitro</button>
+    </div>
+
     <div v-else-if="partido" class="match-board">
       <div class="d-flex justify-content-end mb-3 text-right">
         <button class="btn-print" @click="imprimirPlanilla">🖨️ Descargar / Imprimir Planilla</button>
@@ -94,10 +107,12 @@
 <script setup>
 definePageMeta({ middleware: 'auth' });
 const route = useRoute();
+const router = useRouter();
 const partidoId = route.params.id;
 
 const mensajeExito = ref('');
 const informePartido = ref('');
+const enlacesWhatsApp = ref([]);
 
 const { data: partido, pending, refresh } = await useFetch(`/api/arbitro/partido/${partidoId}`);
 
@@ -134,21 +149,34 @@ async function iniciarPartido() {
 }
 
 async function finalizarPartido() {
-  if(confirm('¿Estás seguro de finalizar el partido? Se enviará el informe por WhatsApp a los dirigentes.')) {
+  if(confirm('¿Estás seguro de finalizar el partido?')) {
     try {
-      await $fetch('/api/arbitro/finalizar', {
+      const res = await $fetch('/api/arbitro/finalizar', {
         method: 'POST',
         body: { 
           partido_id: partidoId,
           informe: informePartido.value
         }
       });
-      alert('Partido finalizado y reportes enviados.');
-      router.push('/arbitro');
+      
+      if (res.enlacesWhatsApp && res.enlacesWhatsApp.length > 0) {
+        enlacesWhatsApp.value = res.enlacesWhatsApp;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        alert('Partido finalizado exitosamente. (No se encontraron números de WhatsApp de los dirigentes).');
+        router.push('/arbitro');
+      }
     } catch (error) {
       alert('Error al finalizar el partido.');
     }
   }
+}
+
+function abrirWhatsApp(enlace) {
+  // Remueve caracteres no numéricos como el +, o espacios para la API de WhatsApp
+  const telefonoLimpio = enlace.telefono.replace(/\D/g, '');
+  const url = `https://api.whatsapp.com/send?phone=${telefonoLimpio}&text=${encodeURIComponent(enlace.mensaje)}`;
+  window.open(url, '_blank');
 }
 
 function imprimirPlanilla() {
@@ -203,6 +231,8 @@ function imprimirPlanilla() {
 .btn-print { background: #4b5563; color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; }
 .btn-print:hover { background: #374151; }
 .text-right { text-align: right; }
+.btn-whatsapp { background: #25D366; color: white; font-weight: 800; border: none; padding: 1rem 1.5rem; border-radius: 8px; font-size: 1.1rem; cursor: pointer; box-shadow: 0 4px 6px rgba(37, 211, 102, 0.3); transition: transform 0.1s; }
+.btn-whatsapp:hover { background: #128C7E; transform: scale(1.02); }
 
 @media print {
   .header-mobile, .btn-print, .action-buttons, .informe-section { display: none !important; }
