@@ -317,7 +317,7 @@ function formatHeroTitle(title) {
   position: absolute;
   top: 0; left: 0; right: 0; bottom: 0;
   background-size: cover;
-  background-position: center;
+  background-position: top center;
   opacity: 0;
   transition: opacity 1.5s ease-in-out;
 }
