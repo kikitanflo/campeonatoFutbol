@@ -193,12 +193,12 @@ onMounted(() => {
 
 function formatTime(dateString) {
   const d = new Date(dateString);
-  return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', timeZone: 'UTC' });
 }
 
 function formatDate(dateString) {
   const d = new Date(dateString);
-  return d.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'short' });
+  return d.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'short', timeZone: 'UTC' });
 }
 
 function formatHeroTitle(title) {
