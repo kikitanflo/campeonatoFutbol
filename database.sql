@@ -53,6 +53,7 @@ CREATE TABLE IF NOT EXISTS partidos (
     fecha DATETIME DEFAULT NULL,
     goles_local INT DEFAULT 0,
     goles_visitante INT DEFAULT 0,
+    arbitraje_pagado BOOLEAN DEFAULT 0,
     FOREIGN KEY (equipo_local_id) REFERENCES equipos(id) ON DELETE CASCADE,
     FOREIGN KEY (equipo_visitante_id) REFERENCES equipos(id) ON DELETE CASCADE
 );

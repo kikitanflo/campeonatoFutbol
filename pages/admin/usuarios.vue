@@ -8,19 +8,19 @@
     <div class="admin-grid">
       <!-- Crear Usuario -->
       <div class="card">
-        <h3>Crear Nuevo Usuario</h3>
-        <form @submit.prevent="crearUsuario" class="mt-4">
+        <h3>{{ editingId ? '✏️ Editar Usuario' : 'Crear Nuevo Usuario' }}</h3>
+        <form @submit.prevent="guardarUsuario" class="mt-4">
           <div class="form-group">
             <label>Nombre de Usuario</label>
             <input type="text" v-model="form.username" class="form-control" required placeholder="Ej: arbitro2">
           </div>
           <div class="form-group">
-            <label>Contraseña</label>
-            <input type="password" v-model="form.password" class="form-control" required>
+            <label>{{ editingId ? 'Nueva Contraseña (Opcional)' : 'Contraseña' }}</label>
+            <input type="password" v-model="form.password" class="form-control" :required="!editingId" placeholder="Déjalo en blanco para mantener la actual">
           </div>
           <div class="form-group">
             <label>Rol</label>
-            <select v-model="form.rol" class="form-control" required>
+            <select v-model="form.rol" class="form-control" required :disabled="editingId !== null">
               <option value="arbitro">Árbitro</option>
               <option value="dirigente">Dirigente</option>
             </select>
@@ -44,9 +44,14 @@
             {{ mensaje }}
           </div>
 
-          <button type="submit" class="btn-primary" :disabled="loading">
-            {{ loading ? 'Creando...' : 'Crear Usuario' }}
-          </button>
+          <div style="display: flex; gap: 1rem;">
+            <button type="submit" class="btn-primary" :disabled="loading" style="flex: 1;">
+              {{ loading ? 'Guardando...' : (editingId ? 'Guardar Cambios' : 'Crear Usuario') }}
+            </button>
+            <button type="button" class="btn-secondary" v-if="editingId" @click="cancelarEdicion" style="flex: 1; padding: 0.75rem;">
+              Cancelar
+            </button>
+          </div>
         </form>
       </div>
 
@@ -79,6 +84,7 @@
                   </span>
                 </td>
                 <td>
+                  <button class="btn-sm btn-edit mr-2" @click="editarUsuario(user)">✏️ Editar</button>
                   <button 
                     class="btn-sm" 
                     :class="user.activo ? 'btn-danger' : 'btn-success'"
@@ -99,6 +105,7 @@
 definePageMeta({ middleware: 'auth' });
 
 const form = ref({ username: '', password: '', rol: 'arbitro', equipo_id: '', telefono: '' });
+const editingId = ref(null);
 const loading = ref(false);
 const mensaje = ref('');
 const errorForm = ref(false);
@@ -107,23 +114,42 @@ const { data: apiData, pending, refresh } = await useFetch('/api/admin/usuarios'
 const usuarios = computed(() => apiData.value?.usuarios || []);
 const equipos = computed(() => apiData.value?.equipos || []);
 
-async function crearUsuario() {
+function editarUsuario(user) {
+  form.value = {
+    username: user.username,
+    password: '',
+    rol: user.rol,
+    equipo_id: user.equipo_id || '',
+    telefono: user.telefono || ''
+  };
+  editingId.value = user.id;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function cancelarEdicion() {
+  form.value = { username: '', password: '', rol: 'arbitro', equipo_id: '', telefono: '' };
+  editingId.value = null;
+  mensaje.value = '';
+}
+
+async function guardarUsuario() {
   loading.value = true;
   mensaje.value = '';
   errorForm.value = false;
 
   try {
+    const isEdit = editingId.value !== null;
     const { error } = await useFetch('/api/admin/usuarios', {
-      method: 'POST',
-      body: form.value
+      method: isEdit ? 'PUT' : 'POST',
+      body: isEdit ? { ...form.value, id: editingId.value, action: 'edit' } : form.value
     });
 
     if (error.value) {
       errorForm.value = true;
-      mensaje.value = error.value.data?.statusMessage || 'Error al crear usuario';
+      mensaje.value = error.value.data?.statusMessage || (isEdit ? 'Error al actualizar usuario' : 'Error al crear usuario');
     } else {
-      mensaje.value = 'Usuario creado con éxito!';
-      form.value = { username: '', password: '', rol: 'arbitro', equipo_id: '', telefono: '' };
+      mensaje.value = isEdit ? 'Usuario actualizado con éxito!' : 'Usuario creado con éxito!';
+      cancelarEdicion();
       await refresh();
       setTimeout(() => { mensaje.value = ''; }, 3000);
     }
@@ -168,6 +194,8 @@ h3 { font-size: 1.2rem; margin-bottom: 0.5rem; color: var(--primary-color); bord
 .btn-sm { padding: 0.4rem 0.8rem; border-radius: 4px; font-size: 0.8rem; font-weight: 600; cursor: pointer; border: none; color: white; }
 .btn-danger { background-color: #ef4444; }
 .btn-success { background-color: #10b981; }
+.btn-edit { background-color: #3b82f6; }
+.mr-2 { margin-right: 0.5rem; }
 
 .alert { padding: 0.75rem; border-radius: 6px; margin-bottom: 1rem; font-size: 0.9rem; text-align: center; font-weight: 600; }
 .alert-success { background-color: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
