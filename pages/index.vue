@@ -12,10 +12,12 @@
                 {{ partido.estado === 'En Curso' ? 'EN VIVO' : ((partido.estado === 'Programado' || partido.estado === 'Pendiente') && partido.fecha ? formatTime(partido.fecha) : partido.estado.toUpperCase()) }}
               </span>
               <div class="teams">
+                <img :src="partido.local_logo" v-if="partido.local_logo" class="ticker-logo" alt="">
                 <span class="team-name">{{ partido.local_nombre }}</span> 
                 <span class="score" v-if="partido.estado !== 'Programado'">{{ partido.goles_local }} - {{ partido.goles_visitante }}</span>
                 <span class="score pending" v-else>VS</span>
                 <span class="team-name">{{ partido.visitante_nombre }}</span>
+                <img :src="partido.visitante_logo" v-if="partido.visitante_logo" class="ticker-logo" alt="">
               </div>
             </div>
             <!-- Duplicate for infinite scroll effect -->
@@ -25,10 +27,12 @@
                 {{ partido.estado === 'En Curso' ? 'EN VIVO' : ((partido.estado === 'Programado' || partido.estado === 'Pendiente') && partido.fecha ? formatTime(partido.fecha) : partido.estado.toUpperCase()) }}
               </span>
               <div class="teams">
+                <img :src="partido.local_logo" v-if="partido.local_logo" class="ticker-logo" alt="">
                 <span class="team-name">{{ partido.local_nombre }}</span> 
                 <span class="score" v-if="partido.estado !== 'Programado'">{{ partido.goles_local }} - {{ partido.goles_visitante }}</span>
                 <span class="score pending" v-else>VS</span>
                 <span class="team-name">{{ partido.visitante_nombre }}</span>
+                <img :src="partido.visitante_logo" v-if="partido.visitante_logo" class="ticker-logo" alt="">
               </div>
             </div>
           </div>
@@ -112,10 +116,14 @@
             
             <div class="schedule-teams">
               <div class="team team-local">
+                <img :src="partido.local_logo" v-if="partido.local_logo" class="card-logo" alt="">
+                <div class="card-logo-placeholder" v-else><i class="fas fa-shield-alt"></i></div>
                 <span class="team-name">{{ partido.local_nombre }}</span>
               </div>
               <div class="vs-badge">VS</div>
               <div class="team team-visitor">
+                <img :src="partido.visitante_logo" v-if="partido.visitante_logo" class="card-logo" alt="">
+                <div class="card-logo-placeholder" v-else><i class="fas fa-shield-alt"></i></div>
                 <span class="team-name">{{ partido.visitante_nombre }}</span>
               </div>
             </div>
@@ -287,9 +295,10 @@ function formatHeroTitle(title) {
 .blink { animation: blinker 1.5s linear infinite; margin-right: 0.3rem;}
 @keyframes blinker { 50% { opacity: 0; } }
 
-.teams { font-weight: 600; display: flex; gap: 0.75rem; align-items: center; }
-.team-name { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px;}
-.score { font-size: 1.1rem; font-weight: 900; background: #1f2937; padding: 0.2rem 0.6rem; border-radius: 4px;}
+.teams { font-weight: 600; display: flex; gap: 0.5rem; align-items: center; }
+.ticker-content .team-name { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; color: white; }
+.ticker-logo { width: 20px; height: 20px; object-fit: contain; }
+.score { font-size: 1.1rem; font-weight: 900; background: #1f2937; padding: 0.2rem 0.6rem; border-radius: 4px; color: white; }
 .score.pending { background: transparent; color: var(--text-muted); font-size: 0.9rem; }
 
 /* HERO CAROUSEL */
@@ -496,7 +505,7 @@ function formatHeroTitle(title) {
 
 .matches-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 1.5rem;
 }
 
@@ -532,8 +541,10 @@ function formatHeroTitle(title) {
   margin-bottom: 1.5rem;
 }
 
-.team { flex: 1; text-align: center; }
-.team-name { font-size: 1.2rem; font-weight: 800; color: #1f2937; text-transform: uppercase; }
+.team { flex: 1; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0 0.5rem; gap: 0.5rem; }
+.card-logo { width: 45px; height: 45px; object-fit: contain; }
+.card-logo-placeholder { width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; background: #f3f4f6; border-radius: 50%; color: #9ca3af; font-size: 1.2rem; }
+.schedule-teams .team-name { font-size: 0.85rem; font-weight: 800; color: #1f2937; text-transform: uppercase; word-break: break-word; line-height: 1.2; }
 
 .vs-badge {
   background: #f3f4f6;
