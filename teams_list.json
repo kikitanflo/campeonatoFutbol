@@ -1,0 +1,30 @@
+[
+  {
+    "id": 1,
+    "nombre": "Los Galacticos"
+  },
+  {
+    "id": 2,
+    "nombre": "Real FC"
+  },
+  {
+    "id": 3,
+    "nombre": "Sporting Club"
+  },
+  {
+    "id": 4,
+    "nombre": "Deportivo Sur"
+  },
+  {
+    "id": 5,
+    "nombre": "Atlético Norte"
+  },
+  {
+    "id": 6,
+    "nombre": "Los Leones"
+  },
+  {
+    "id": 7,
+    "nombre": "montesuma"
+  }
+]
