@@ -5,6 +5,25 @@
       <button @click="logout" class="btn-logout">Cerrar Sesión</button>
     </div>
 
+    <div v-if="stats && stats.success" class="stats-summary">
+      <div class="stat-box">
+        <div class="stat-value">{{ stats.jugados }}</div>
+        <div class="stat-label">Partidos Jugados</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-value">{{ stats.pendientes }}</div>
+        <div class="stat-label">Partidos Pendientes</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-value">{{ stats.enCurso }}</div>
+        <div class="stat-label">Partidos en Curso</div>
+      </div>
+      <div class="stat-box total">
+        <div class="stat-value">{{ stats.total }}</div>
+        <div class="stat-label">Total Programados</div>
+      </div>
+    </div>
+
     <div class="dashboard-grid">
       <div class="card action-card">
         <h3>🛡️ Equipos</h3>
@@ -41,6 +60,8 @@ definePageMeta({
 const router = useRouter();
 const authCookie = useCookie('admin_session');
 
+const { data: stats } = await useFetch('/api/admin/dashboard');
+
 function logout() {
   authCookie.value = null; // Borrar cookie
   router.push('/admin/login');
@@ -74,6 +95,42 @@ function logout() {
 
 .btn-logout:hover {
   background-color: #e5e7eb;
+}
+
+.stats-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+}
+
+.stat-box {
+  background: white;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 1.5rem;
+  text-align: center;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.stat-box.total {
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+}
+
+.stat-value {
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: var(--primary-color);
+  line-height: 1;
+  margin-bottom: 0.5rem;
+}
+
+.stat-label {
+  color: #64748b;
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-transform: uppercase;
 }
 
 .dashboard-grid {
