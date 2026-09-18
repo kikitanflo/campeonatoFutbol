@@ -9,9 +9,10 @@
       <!-- Formulario de Programación -->
       <div class="card">
         <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--border-color); padding-bottom: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
-          <h3 style="border: none; padding: 0; margin: 0;">Crear Partido Extra Manualmente</h3>
+          <h3 style="border: none; padding: 0; margin: 0;">{{ isEditingMatch ? 'Editar Partido Extra' : 'Crear Partido Extra Manualmente' }}</h3>
           <div style="display: flex; gap: 0.5rem;">
-            <button @click="resetearTorneo" class="btn-danger" :disabled="loadingReset">
+            <button v-if="isEditingMatch" type="button" @click="cancelarEdicionPartido" class="btn-secondary" style="padding: 0.5rem;">Cancelar Edición</button>
+            <button @click="resetearTorneo" type="button" class="btn-danger" :disabled="loadingReset">
               {{ loadingReset ? 'Borrando...' : '⚠️ Resetear Torneo a Cero' }}
             </button>
             <button @click="autogenerarCalendario" class="btn-autogenerar" :disabled="loadingAuto">
@@ -60,7 +61,7 @@
           </div>
 
           <button type="submit" class="btn-primary" :disabled="loading">
-            {{ loading ? 'Guardando...' : 'Programar Partido' }}
+            {{ loading ? 'Guardando...' : (isEditingMatch ? 'Guardar Cambios' : 'Programar Partido') }}
           </button>
         </form>
       </div>
@@ -88,6 +89,7 @@
               </div>
               <span v-else class="fecha">
                 {{ partido.fecha ? new Date(partido.fecha.replace(' ', 'T')).toLocaleString() : 'Sin fecha' }}
+                <button v-if="partido.estado === 'Pendiente'" @click="startEditFull(partido)" class="btn-icon" title="Editar Partido Completo">✏️</button>
                 <button @click="startEdit(partido)" class="btn-icon" title="Asignar o Editar Fecha">📅</button>
               </span>
             </div>
@@ -105,7 +107,8 @@
 <script setup>
 definePageMeta({ middleware: 'auth' });
 
-const form = ref({ equipo_local_id: '', equipo_visitante_id: '', jornada: 1, fecha: '' });
+const form = ref({ id: null, equipo_local_id: '', equipo_visitante_id: '', jornada: 1, fecha: '' });
+const isEditingMatch = computed(() => !!form.value.id);
 const loading = ref(false);
 const loadingAuto = ref(false);
 const loadingReset = ref(false);
@@ -119,25 +122,39 @@ const { data: apiData, pending, refresh } = await useFetch('/api/admin/partidos'
 const equipos = computed(() => apiData.value?.equipos || []);
 const partidos = computed(() => apiData.value?.partidos || []);
 
+function startEditFull(partido) {
+  form.value = {
+    id: partido.id,
+    equipo_local_id: partido.equipo_local_id,
+    equipo_visitante_id: partido.equipo_visitante_id,
+    jornada: partido.jornada,
+    fecha: partido.fecha ? partido.fecha.replace(' ', 'T').slice(0, 16) : ''
+  };
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function cancelarEdicionPartido() {
+  form.value = { id: null, equipo_local_id: '', equipo_visitante_id: '', jornada: 1, fecha: '' };
+}
+
 async function programarPartido() {
   loading.value = true;
   mensaje.value = '';
   errorForm.value = false;
 
   try {
+    const method = isEditingMatch.value ? 'PUT' : 'POST';
     const { error } = await useFetch('/api/admin/partidos', {
-      method: 'POST',
+      method,
       body: form.value
     });
 
     if (error.value) {
       errorForm.value = true;
-      mensaje.value = error.value.data?.statusMessage || 'Error al programar el partido';
+      mensaje.value = error.value.data?.statusMessage || 'Error al guardar el partido';
     } else {
-      mensaje.value = '¡Partido programado con éxito!';
-      form.value.equipo_local_id = '';
-      form.value.equipo_visitante_id = '';
-      form.value.fecha = '';
+      mensaje.value = isEditingMatch.value ? '¡Partido actualizado con éxito!' : '¡Partido programado con éxito!';
+      cancelarEdicionPartido();
       await refresh();
       setTimeout(() => { mensaje.value = ''; }, 3000);
     }

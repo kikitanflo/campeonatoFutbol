@@ -7,9 +7,9 @@ export default defineEventHandler(async (event) => {
   if (user.rol !== 'admin') throw createError({ statusCode: 403, statusMessage: 'Prohibido' });
 
   const body = await readBody(event);
-  const { equipo_local_id, equipo_visitante_id, jornada, fecha } = body;
+  const { id, equipo_local_id, equipo_visitante_id, jornada, fecha } = body;
 
-  if (!equipo_local_id || !equipo_visitante_id || !jornada) {
+  if (!id || !equipo_local_id || !equipo_visitante_id || !jornada) {
     throw createError({ statusCode: 400, statusMessage: 'Faltan campos obligatorios' });
   }
 
@@ -26,14 +26,18 @@ export default defineEventHandler(async (event) => {
       }
     }
 
-    await db.query(
-      'INSERT INTO partidos (equipo_local_id, equipo_visitante_id, jornada, fecha, estado) VALUES (?, ?, ?, ?, "Pendiente")',
-      [equipo_local_id, equipo_visitante_id, jornada, formattedFecha]
+    const [result] = await db.query(
+      'UPDATE partidos SET equipo_local_id = ?, equipo_visitante_id = ?, jornada = ?, fecha = ? WHERE id = ? AND estado = "Pendiente"',
+      [equipo_local_id, equipo_visitante_id, jornada, formattedFecha, id]
     );
 
-    return { success: true, message: 'Partido programado exitosamente' };
+    if (result.affectedRows === 0) {
+      throw createError({ statusCode: 404, statusMessage: 'Partido no encontrado o ya no está pendiente' });
+    }
+
+    return { success: true, message: 'Partido actualizado exitosamente' };
   } catch (error) {
-    console.error('Error creando partido:', error);
+    console.error('Error actualizando partido:', error);
     throw createError({ statusCode: 500, statusMessage: 'Error interno guardando el partido' });
   }
 });

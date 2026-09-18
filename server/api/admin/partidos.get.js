@@ -12,7 +12,7 @@ export default defineEventHandler(async (event) => {
 
     // Traer todos los partidos programados
     const [partidos] = await db.query(`
-      SELECT p.id, p.jornada, p.fecha, p.estado, 
+      SELECT p.id, p.jornada, p.fecha, p.estado, p.equipo_local_id, p.equipo_visitante_id,
              el.nombre as local_nombre, ev.nombre as visitante_nombre 
       FROM partidos p
       JOIN equipos el ON p.equipo_local_id = el.id
