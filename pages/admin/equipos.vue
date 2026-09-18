@@ -42,6 +42,7 @@
                 <td>{{ team.id }}</td>
                 <td style="font-weight: bold; text-align: left;">{{ team.name }}</td>
                 <td>
+                  <button class="btn-sm btn-edit" @click="editarEquipo(team)">Editar</button>
                   <button class="btn-sm btn-delete">Eliminar</button>
                 </td>
               </tr>
@@ -96,6 +97,36 @@ async function crearEquipo() {
     loading.value = false;
   }
 }
+
+async function editarEquipo(team) {
+  const nuevo = prompt('Nuevo nombre para el equipo:', team.name);
+  if (!nuevo || nuevo === team.name) return;
+
+  loading.value = true;
+  mensaje.value = '';
+  errorForm.value = false;
+
+  try {
+    const { data, error } = await useFetch('/api/equipos', {
+      method: 'PUT',
+      body: { id: team.id, nombre: nuevo }
+    });
+
+    if (error.value) {
+      errorForm.value = true;
+      mensaje.value = error.value.data?.statusMessage || 'Error al actualizar';
+    } else {
+      mensaje.value = '¡Equipo actualizado con éxito!';
+      await refresh();
+      setTimeout(() => { mensaje.value = ''; }, 3000);
+    }
+  } catch (err) {
+    errorForm.value = true;
+    mensaje.value = 'Ocurrió un error inesperado';
+  } finally {
+    loading.value = false;
+  }
+}
 </script>
 
 <style scoped>
@@ -127,6 +158,7 @@ h3 { font-size: 1.2rem; margin-bottom: 1rem; color: var(--primary-color); border
 .btn-secondary { background-color: white; color: #111827; border: 1px solid #e5e7eb; border-radius: 6px; font-weight: 600; cursor: pointer; }
 .btn-sm { padding: 0.25rem 0.5rem; font-size: 0.8rem; border-radius: 4px; cursor: pointer; border: none; }
 .btn-delete { background-color: #fee2e2; color: #ef4444; }
+.btn-edit { background-color: #dbeafe; color: #2563eb; margin-right: 0.5rem; }
 
 .alert { padding: 0.75rem; border-radius: 6px; margin-bottom: 1rem; font-size: 0.9rem; text-align: center; font-weight: 600; }
 .alert-success { background-color: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
