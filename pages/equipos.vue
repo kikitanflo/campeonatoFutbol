@@ -17,7 +17,7 @@
       </div>
 
       <div v-else class="teams-grid mt-4">
-        <div v-for="team in equipos" :key="team.id" class="glass-card team-card">
+        <NuxtLink v-for="team in equipos" :key="team.id" :to="`/equipo/${team.id}`" class="glass-card team-card" style="text-decoration: none;">
           <div class="team-logo-large">
             <span class="logo-placeholder">{{ team.name.charAt(0) }}</span>
           </div>
@@ -36,7 +36,7 @@
               <span class="value">{{ team.gf }}</span>
             </div>
           </div>
-        </div>
+        </NuxtLink>
       </div>
     </div>
   </div>

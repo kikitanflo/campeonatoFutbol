@@ -36,8 +36,10 @@
                   <span v-else class="rank-number">{{ index + 1 }}</span>
                 </td>
                 <td class="col-team">
-                  <div class="team-logo-placeholder">{{ team.name.charAt(0) }}</div>
-                  <span class="team-name-text">{{ team.name }}</span>
+                  <NuxtLink :to="`/equipo/${team.id}`" style="display: flex; align-items: center; gap: 1rem; text-decoration: none; color: inherit;">
+                    <div class="team-logo-placeholder">{{ team.name.charAt(0) }}</div>
+                    <span class="team-name-text">{{ team.name }}</span>
+                  </NuxtLink>
                 </td>
                 <td class="col-points text-center">
                   <span class="points-badge">{{ team.pts }}</span>
