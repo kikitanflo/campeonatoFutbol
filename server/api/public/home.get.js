@@ -13,9 +13,11 @@ export default defineEventHandler(async (event) => {
     let currentJornada = jornadaData[0]?.current_jornada;
     
     // Si todos los partidos terminaron, mostramos la última jornada jugada
+    const [maxJornadaData] = await db.query(`SELECT MAX(jornada) as max_jornada FROM partidos`);
+    const maxJornada = maxJornadaData[0]?.max_jornada || 1;
+
     if (!currentJornada) {
-      const [maxJornadaData] = await db.query(`SELECT MAX(jornada) as current_jornada FROM partidos`);
-      currentJornada = maxJornadaData[0]?.current_jornada || 1;
+      currentJornada = maxJornada;
     }
 
     // 2. Obtener partidos de la Jornada Actual para el Ticker
@@ -105,6 +107,8 @@ export default defineEventHandler(async (event) => {
       puntero,
       goleador,
       proximaFecha,
+      currentJornada,
+      maxJornada,
       configuracion: finalConfig
     };
   } catch (error) {

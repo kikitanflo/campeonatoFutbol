@@ -95,14 +95,22 @@
         </div>
       </section>
 
-      <!-- Programación de la Próxima Fecha -->
-      <section class="upcoming-matches" v-if="!pending && data?.partidos?.length">
-        <div class="section-header">
-          <h2 class="section-title">Programación <span class="highlight">Jornada {{ data.partidos[0].jornada }}</span></h2>
+      <!-- Programación por Jornadas -->
+      <section class="upcoming-matches" v-if="!pending && currentMatches.length">
+        <div class="section-header" style="display: flex; justify-content: center; align-items: center; gap: 1rem; flex-wrap: wrap;">
+          <button class="btn-pagination" @click="changeJornada(displayedJornada - 1)" :disabled="displayedJornada <= 1">
+            ⬅ Anterior
+          </button>
+          
+          <h2 class="section-title mb-0" style="margin-bottom: 0;">Programación <span class="highlight">Jornada {{ displayedJornada }}</span></h2>
+          
+          <button class="btn-pagination" @click="changeJornada(displayedJornada + 1)" :disabled="displayedJornada >= data.maxJornada">
+            Siguiente ➡
+          </button>
         </div>
         
-        <div class="matches-grid">
-          <div v-for="partido in data.partidos" :key="'sched-'+partido.id" class="schedule-card">
+        <div class="matches-grid" :class="{'loading-matches': isChangingJornada}">
+          <div v-for="partido in currentMatches" :key="'sched-'+partido.id" class="schedule-card">
             <div class="schedule-header">
               <span class="schedule-date">
                 <i class="far fa-calendar-alt mr-1"></i>
@@ -177,6 +185,33 @@
 
 <script setup>
 const { data, pending } = await useFetch('/api/public/home');
+
+const displayedJornada = ref(1);
+const currentMatches = ref([]);
+const isChangingJornada = ref(false);
+
+watchEffect(() => {
+  if (data.value && !pending.value) {
+    displayedJornada.value = data.value.currentJornada;
+    currentMatches.value = data.value.partidos || [];
+  }
+});
+
+async function changeJornada(newJornada) {
+  if (newJornada < 1 || newJornada > data.value.maxJornada) return;
+  
+  isChangingJornada.value = true;
+  displayedJornada.value = newJornada;
+  
+  try {
+    const res = await $fetch(`/api/public/partidos?jornada=${newJornada}`);
+    currentMatches.value = res.partidos || [];
+  } catch (e) {
+    console.error(e);
+  } finally {
+    isChangingJornada.value = false;
+  }
+}
 
 const heroImages = computed(() => {
   return data.value?.configuracion?.hero_images || [];
@@ -495,18 +530,45 @@ function formatHeroTitle(title) {
   .schedule-teams { flex-direction: column; gap: 1rem; }
 }
 
-/* UPCOMING MATCHES */
 .upcoming-matches {
   margin-top: 4rem;
   margin-bottom: 2rem;
 }
-.section-header { text-align: center; margin-bottom: 2.5rem; }
+.section-header { margin-bottom: 2.5rem; }
 .section-title { font-size: 2.5rem; font-weight: 900; color: #111827; letter-spacing: -0.5px; }
+
+.btn-pagination {
+  background: white;
+  border: 2px solid #e5e7eb;
+  padding: 0.5rem 1.2rem;
+  border-radius: 50px;
+  font-weight: 800;
+  color: #4b5563;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.btn-pagination:hover:not(:disabled) {
+  background: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+}
+.btn-pagination:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
 
 .matches-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 1.5rem;
+  transition: opacity 0.3s;
+}
+.loading-matches {
+  opacity: 0.5;
+  pointer-events: none;
 }
 
 .schedule-card {
