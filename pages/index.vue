@@ -192,13 +192,13 @@ onMounted(() => {
 });
 
 function formatTime(dateString) {
-  const d = new Date(dateString);
-  return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', timeZone: 'UTC' });
+  const d = new Date(dateString.replace(' ', 'T'));
+  return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 }
 
 function formatDate(dateString) {
-  const d = new Date(dateString);
-  return d.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'short', timeZone: 'UTC' });
+  const d = new Date(dateString.replace(' ', 'T'));
+  return d.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'short' });
 }
 
 function formatHeroTitle(title) {

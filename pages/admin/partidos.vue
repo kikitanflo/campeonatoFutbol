@@ -87,7 +87,7 @@
                 <button @click="cancelEdit()" class="btn-icon cancel-icon" title="Cancelar">❌</button>
               </div>
               <span v-else class="fecha">
-                {{ partido.fecha ? new Date(partido.fecha).toLocaleString() : 'Sin fecha' }}
+                {{ partido.fecha ? new Date(partido.fecha.replace(' ', 'T')).toLocaleString() : 'Sin fecha' }}
                 <button @click="startEdit(partido)" class="btn-icon" title="Asignar o Editar Fecha">📅</button>
               </span>
             </div>
@@ -151,12 +151,8 @@ async function programarPartido() {
 
 function startEdit(partido) {
   editingId.value = partido.id;
-  // Format for datetime-local: YYYY-MM-DDTHH:mm
   if (partido.fecha) {
-    const d = new Date(partido.fecha);
-    const tzoffset = d.getTimezoneOffset() * 60000;
-    const localISOTime = (new Date(d - tzoffset)).toISOString().slice(0, 16);
-    tempFecha.value = localISOTime;
+    tempFecha.value = partido.fecha.replace(' ', 'T').slice(0, 16);
   } else {
     tempFecha.value = '';
   }

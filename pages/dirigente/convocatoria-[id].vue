@@ -10,7 +10,7 @@
     <div v-else-if="jugadores" class="card mt-4">
       <div class="match-info mb-4" v-if="partidoInfo">
         <h3>{{ partidoInfo.local_nombre }} vs {{ partidoInfo.visitante_nombre }}</h3>
-        <p class="text-muted">Jornada {{ partidoInfo.jornada }} - {{ partidoInfo.fecha ? new Date(partidoInfo.fecha).toLocaleString() : 'Fecha por definir' }}</p>
+        <p class="text-muted">Jornada {{ partidoInfo.jornada }} - {{ partidoInfo.fecha ? new Date(partidoInfo.fecha.replace(' ', 'T')).toLocaleString() : 'Fecha por definir' }}</p>
       </div>
 
       <p class="text-muted mb-4" v-if="partidoInfo && partidoInfo.estado !== 'Finalizado'">Selecciona los jugadores que participarán en este partido. Solo los jugadores marcados aparecerán en la planilla del árbitro.</p>

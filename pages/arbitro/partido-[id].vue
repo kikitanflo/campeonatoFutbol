@@ -69,7 +69,9 @@
               <div class="action-buttons">
                 <button class="btn-action btn-gol" @click="registrarEvento(jugador.id, 'Gol')" :disabled="jugador.rojas_partido > 0">⚽</button>
                 <button class="btn-action btn-amarilla" @click="registrarEvento(jugador.id, 'Amarilla')" :disabled="jugador.amarillas_partido >= 2 || jugador.rojas_partido > 0">🟨</button>
+                <button v-if="jugador.amarillas_partido > 0" class="btn-action btn-undo" @click="registrarEvento(jugador.id, 'Quitar Amarilla')" title="Deshacer Amarilla">➖</button>
                 <button class="btn-action btn-roja" @click="registrarEvento(jugador.id, 'Roja')" :disabled="jugador.rojas_partido > 0">🟥</button>
+                <button v-if="jugador.rojas_partido > 0" class="btn-action btn-undo" @click="registrarEvento(jugador.id, 'Quitar Roja')" title="Deshacer Roja">➖</button>
               </div>
             </div>
             <div v-if="partido.jugadores_local.length === 0" class="text-muted small">Sin jugadores inscritos.</div>
@@ -93,7 +95,9 @@
               <div class="action-buttons">
                 <button class="btn-action btn-gol" @click="registrarEvento(jugador.id, 'Gol')" :disabled="jugador.rojas_partido > 0">⚽</button>
                 <button class="btn-action btn-amarilla" @click="registrarEvento(jugador.id, 'Amarilla')" :disabled="jugador.amarillas_partido >= 2 || jugador.rojas_partido > 0">🟨</button>
+                <button v-if="jugador.amarillas_partido > 0" class="btn-action btn-undo" @click="registrarEvento(jugador.id, 'Quitar Amarilla')" title="Deshacer Amarilla">➖</button>
                 <button class="btn-action btn-roja" @click="registrarEvento(jugador.id, 'Roja')" :disabled="jugador.rojas_partido > 0">🟥</button>
+                <button v-if="jugador.rojas_partido > 0" class="btn-action btn-undo" @click="registrarEvento(jugador.id, 'Quitar Roja')" title="Deshacer Roja">➖</button>
               </div>
             </div>
             <div v-if="partido.jugadores_visitante.length === 0" class="text-muted small">Sin jugadores inscritos.</div>
@@ -226,6 +230,7 @@ function imprimirPlanilla() {
 .btn-gol { background: #f3f4f6; }
 .btn-amarilla { background: #fef08a; }
 .btn-roja { background: #fecaca; }
+.btn-undo { background: #e5e7eb; border-color: #9ca3af; font-size: 0.8rem; }
 
 .alert-success { background-color: #d1fae5; color: #065f46; padding: 0.75rem; border-radius: 6px; text-align: center; font-weight: 700; margin-bottom: 1rem; }
 .btn-print { background: #4b5563; color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; }
