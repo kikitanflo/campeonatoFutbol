@@ -21,16 +21,16 @@
         <div class="glass-card team-hero mb-4 mt-4">
           <div class="team-hero-content">
             <div class="team-logo-hero">
-              <img v-if="equipo.logo" :src="equipo.logo" alt="Logo" class="logo-img" />
+              <img v-if="equipo.logo_url" :src="equipo.logo_url" alt="Logo" class="logo-img" />
               <span v-else class="logo-placeholder">{{ equipo.nombre.charAt(0) }}</span>
             </div>
             <div class="team-details">
               <h1 class="team-name">{{ equipo.nombre }}</h1>
               <div class="team-stats-row">
                 <div class="stat-pill"><span class="label">PTS</span> <span class="val">{{ equipo.puntos }}</span></div>
-                <div class="stat-pill"><span class="label">PJ</span> <span class="val">{{ equipo.partidos_ganados + equipo.partidos_empatados + equipo.partidos_perdidos }}</span></div>
-                <div class="stat-pill"><span class="label">GF</span> <span class="val">{{ equipo.goles_favor }}</span></div>
-                <div class="stat-pill"><span class="label">GC</span> <span class="val">{{ equipo.goles_contra }}</span></div>
+                <div class="stat-pill"><span class="label">PJ</span> <span class="val">{{ equipo.partidos_jugados || 0 }}</span></div>
+                <div class="stat-pill"><span class="label">GF</span> <span class="val">{{ equipo.goles_favor || 0 }}</span></div>
+                <div class="stat-pill"><span class="label">GC</span> <span class="val">{{ equipo.goles_contra || 0 }}</span></div>
               </div>
             </div>
           </div>

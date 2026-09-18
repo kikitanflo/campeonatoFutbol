@@ -16,8 +16,8 @@ export default defineEventHandler(async (event) => {
       SELECT p.id, p.jornada, p.fecha, p.estado, 
              p.equipo_local_id, p.equipo_visitante_id,
              p.goles_local, p.goles_visitante,
-             el.nombre as local_nombre, el.logo as local_logo,
-             ev.nombre as visitante_nombre, ev.logo as visitante_logo
+             el.nombre as local_nombre, el.logo_url as local_logo,
+             ev.nombre as visitante_nombre, ev.logo_url as visitante_logo
       FROM partidos p
       JOIN equipos el ON p.equipo_local_id = el.id
       JOIN equipos ev ON p.equipo_visitante_id = ev.id
