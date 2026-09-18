@@ -14,7 +14,8 @@
               <div class="teams">
                 <img :src="partido.local_logo" v-if="partido.local_logo" class="ticker-logo" alt="">
                 <span class="team-name">{{ partido.local_nombre }}</span> 
-                <span class="score" v-if="partido.estado !== 'Programado'">{{ partido.goles_local }} - {{ partido.goles_visitante }}</span>
+                <span class="score" v-if="partido.estado !== 'Programado' && partido.estado !== 'Pendiente' && partido.estado !== 'Descansa'">{{ partido.goles_local }} - {{ partido.goles_visitante }}</span>
+                <span class="score pending" v-else-if="partido.estado === 'Descansa'">-</span>
                 <span class="score pending" v-else>VS</span>
                 <span class="team-name">{{ partido.visitante_nombre }}</span>
                 <img :src="partido.visitante_logo" v-if="partido.visitante_logo" class="ticker-logo" alt="">
@@ -29,7 +30,8 @@
               <div class="teams">
                 <img :src="partido.local_logo" v-if="partido.local_logo" class="ticker-logo" alt="">
                 <span class="team-name">{{ partido.local_nombre }}</span> 
-                <span class="score" v-if="partido.estado !== 'Programado'">{{ partido.goles_local }} - {{ partido.goles_visitante }}</span>
+                <span class="score" v-if="partido.estado !== 'Programado' && partido.estado !== 'Pendiente' && partido.estado !== 'Descansa'">{{ partido.goles_local }} - {{ partido.goles_visitante }}</span>
+                <span class="score pending" v-else-if="partido.estado === 'Descansa'">-</span>
                 <span class="score pending" v-else>VS</span>
                 <span class="team-name">{{ partido.visitante_nombre }}</span>
                 <img :src="partido.visitante_logo" v-if="partido.visitante_logo" class="ticker-logo" alt="">
@@ -636,6 +638,7 @@ function formatHeroTitle(title) {
 .status-programado { background: #dbeafe; color: #2563eb; }
 .status-en-curso { background: #fee2e2; color: #dc2626; animation: pulse 2s infinite; }
 .status-finalizado { background: #f3f4f6; color: #4b5563; }
+.status-descansa { background: #e5e7eb; color: #374151; }
 
 @keyframes pulse {
   0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.4); }

@@ -23,6 +23,32 @@ export default defineEventHandler(async (event) => {
         p.fecha ASC
     `, [jornada]);
 
+    // Equipos que descansan
+    const [descansan] = await db.query(`
+      SELECT id, nombre, logo_url
+      FROM equipos
+      WHERE id NOT IN (
+        SELECT equipo_local_id FROM partidos WHERE jornada = ?
+        UNION
+        SELECT equipo_visitante_id FROM partidos WHERE jornada = ?
+      )
+    `, [jornada, jornada]);
+
+    descansan.forEach(eq => {
+      partidos.push({
+        id: 'descanso-' + eq.id,
+        jornada: jornada,
+        estado: 'Descansa',
+        fecha: null,
+        local_nombre: eq.nombre,
+        local_logo: eq.logo_url,
+        visitante_nombre: 'DESCANSO',
+        visitante_logo: null,
+        goles_local: null,
+        goles_visitante: null
+      });
+    });
+
     return { partidos };
   } catch (error) {
     console.error('Error fetching partidos:', error);

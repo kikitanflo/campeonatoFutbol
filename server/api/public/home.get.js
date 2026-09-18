@@ -39,7 +39,33 @@ export default defineEventHandler(async (event) => {
         p.fecha ASC
     `, [currentJornada]);
 
-    // 2. Obtener el Puntero (El equipo con más puntos y mejor diferencia)
+    // Equipos que descansan
+    const [descansan] = await db.query(`
+      SELECT id, nombre, logo_url
+      FROM equipos
+      WHERE id NOT IN (
+        SELECT equipo_local_id FROM partidos WHERE jornada = ?
+        UNION
+        SELECT equipo_visitante_id FROM partidos WHERE jornada = ?
+      )
+    `, [currentJornada, currentJornada]);
+
+    descansan.forEach(eq => {
+      partidos.push({
+        id: 'descanso-' + eq.id,
+        jornada: currentJornada,
+        estado: 'Descansa',
+        fecha: null,
+        local_nombre: eq.nombre,
+        local_logo: eq.logo_url,
+        visitante_nombre: 'DESCANSO',
+        visitante_logo: null,
+        goles_local: null,
+        goles_visitante: null
+      });
+    });
+
+    // 3. Obtener el Puntero (El equipo con más puntos y mejor diferencia)
     const [punteroData] = await db.query(`
       SELECT nombre, puntos 
       FROM equipos 
