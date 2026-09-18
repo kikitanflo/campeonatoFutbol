@@ -99,8 +99,13 @@ async function crearEquipo() {
 }
 
 async function editarEquipo(team) {
-  const nuevo = prompt('Nuevo nombre para el equipo:', team.name);
-  if (!nuevo || nuevo === team.name) return;
+  const nuevoNombre = prompt('Nuevo nombre para el equipo:', team.name);
+  if (nuevoNombre === null) return;
+  
+  const nuevoLogo = prompt('URL del logo del equipo (Ej: /img/logos/betulia_1789761015849.jpg):', team.logo_url || '/img/logos/');
+  if (nuevoLogo === null) return;
+
+  if (nuevoNombre === team.name && nuevoLogo === team.logo_url) return;
 
   loading.value = true;
   mensaje.value = '';
@@ -109,7 +114,7 @@ async function editarEquipo(team) {
   try {
     const { data, error } = await useFetch('/api/equipos', {
       method: 'PUT',
-      body: { id: team.id, nombre: nuevo }
+      body: { id: team.id, nombre: nuevoNombre, logo_url: nuevoLogo }
     });
 
     if (error.value) {

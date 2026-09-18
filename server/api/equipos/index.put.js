@@ -7,7 +7,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const body = await readBody(event);
-  const { id, nombre } = body;
+  const { id, nombre, logo_url } = body;
 
   if (!id || !nombre) {
     throw createError({ statusCode: 400, statusMessage: 'El ID y el nombre son obligatorios' });
@@ -15,8 +15,8 @@ export default defineEventHandler(async (event) => {
 
   try {
     const [result] = await db.query(
-      'UPDATE equipos SET nombre = ? WHERE id = ?',
-      [nombre, id]
+      'UPDATE equipos SET nombre = ?, logo_url = ? WHERE id = ?',
+      [nombre, logo_url || null, id]
     );
 
     if (result.affectedRows === 0) {
