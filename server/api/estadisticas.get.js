@@ -33,11 +33,24 @@ export default defineEventHandler(async (event) => {
       LIMIT 10
     `);
 
+    // 4. Juego Limpio por Equipos
+    const [fairplay] = await db.query(`
+      SELECT e.id, e.nombre as team,
+             COALESCE(SUM(j.amarillas), 0) as total_amarillas, 
+             COALESCE(SUM(j.rojas), 0) as total_rojas,
+             (COALESCE(SUM(j.amarillas), 0) + (COALESCE(SUM(j.rojas), 0) * 3)) as puntos_castigo
+      FROM equipos e
+      LEFT JOIN jugadores j ON e.id = j.equipo_id
+      GROUP BY e.id, e.nombre
+      ORDER BY puntos_castigo ASC, e.nombre ASC
+    `);
+
     return {
       success: true,
       goleadores,
       defensa,
-      tarjetas
+      tarjetas,
+      fairplay
     };
 
   } catch (error) {

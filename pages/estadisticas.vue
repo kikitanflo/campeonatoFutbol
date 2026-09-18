@@ -90,7 +90,7 @@
         </div>
         
         <!-- Tabla Fair Play Inverso (Tarjetas) -->
-        <div class="glass-card full-width">
+        <div class="glass-card">
           <h3 class="section-title"><span class="icon">🟨</span> Registro Disciplinario</h3>
           <div class="table-responsive">
             <table class="premium-table">
@@ -122,6 +122,50 @@
                 </tr>
                 <tr v-if="!stats.tarjetas || stats.tarjetas.length === 0">
                   <td colspan="4" class="empty-state">No hay tarjetas registradas en el torneo. ¡Juego limpio!</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Tabla de Juego Limpio por Equipos -->
+        <div class="glass-card">
+          <h3 class="section-title"><span class="icon">🏆</span> Juego Limpio por Equipos</h3>
+          <div class="table-responsive">
+            <table class="premium-table">
+              <thead>
+                <tr>
+                  <th class="col-rank">#</th>
+                  <th class="col-team">EQUIPO</th>
+                  <th class="text-center">AMARILLAS</th>
+                  <th class="text-center">ROJAS</th>
+                  <th class="text-center">PTS CASTIGO</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(equipo, index) in stats.fairplay" :key="equipo.id">
+                  <td class="col-rank">
+                    <span v-if="index === 0" class="medal gold">🏆</span>
+                    <span v-else class="rank-number">{{ index + 1 }}</span>
+                  </td>
+                  <td class="col-team">
+                    <div class="team-logo-placeholder">{{ equipo.team.charAt(0) }}</div>
+                    <span class="team-name-text">{{ equipo.team }}</span>
+                  </td>
+                  <td class="text-center">
+                    <span v-if="equipo.total_amarillas > 0" class="card-badge yellow">{{ equipo.total_amarillas }}</span>
+                    <span v-else class="text-muted">0</span>
+                  </td>
+                  <td class="text-center">
+                    <span v-if="equipo.total_rojas > 0" class="card-badge red">{{ equipo.total_rojas }}</span>
+                    <span v-else class="text-muted">0</span>
+                  </td>
+                  <td class="text-center">
+                    <span class="stat-badge" :class="equipo.puntos_castigo === 0 ? 'green' : 'blue'">{{ equipo.puntos_castigo }}</span>
+                  </td>
+                </tr>
+                <tr v-if="!stats.fairplay || stats.fairplay.length === 0">
+                  <td colspan="5" class="empty-state">No hay equipos registrados.</td>
                 </tr>
               </tbody>
             </table>
