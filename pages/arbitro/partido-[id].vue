@@ -68,6 +68,8 @@
               </div>
               <div class="action-buttons">
                 <button class="btn-action btn-gol" @click="registrarEvento(jugador.id, 'Gol')" :disabled="jugador.rojas_partido > 0">⚽</button>
+                <button v-if="jugador.goles_partido > 0" class="btn-action btn-undo" @click="registrarEvento(jugador.id, 'Quitar Gol')" title="Deshacer Gol">➖</button>
+                
                 <button class="btn-action btn-amarilla" @click="registrarEvento(jugador.id, 'Amarilla')" :disabled="jugador.amarillas_partido >= 2 || jugador.rojas_partido > 0">🟨</button>
                 <button v-if="jugador.amarillas_partido > 0" class="btn-action btn-undo" @click="registrarEvento(jugador.id, 'Quitar Amarilla')" title="Deshacer Amarilla">➖</button>
                 <button class="btn-action btn-roja" @click="registrarEvento(jugador.id, 'Roja')" :disabled="jugador.rojas_partido > 0">🟥</button>
@@ -94,6 +96,8 @@
               </div>
               <div class="action-buttons">
                 <button class="btn-action btn-gol" @click="registrarEvento(jugador.id, 'Gol')" :disabled="jugador.rojas_partido > 0">⚽</button>
+                <button v-if="jugador.goles_partido > 0" class="btn-action btn-undo" @click="registrarEvento(jugador.id, 'Quitar Gol')" title="Deshacer Gol">➖</button>
+                
                 <button class="btn-action btn-amarilla" @click="registrarEvento(jugador.id, 'Amarilla')" :disabled="jugador.amarillas_partido >= 2 || jugador.rojas_partido > 0">🟨</button>
                 <button v-if="jugador.amarillas_partido > 0" class="btn-action btn-undo" @click="registrarEvento(jugador.id, 'Quitar Amarilla')" title="Deshacer Amarilla">➖</button>
                 <button class="btn-action btn-roja" @click="registrarEvento(jugador.id, 'Roja')" :disabled="jugador.rojas_partido > 0">🟥</button>

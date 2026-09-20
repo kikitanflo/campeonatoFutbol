@@ -31,7 +31,7 @@ export default defineEventHandler(async (event) => {
 
     // 3. Actualizar estadísticas del jugador
     let columnaStats = '';
-    if (tipo_evento === 'Gol') columnaStats = 'goles';
+    if (tipo_evento === 'Gol' || tipo_evento === 'Quitar Gol') columnaStats = 'goles';
     if (tipo_evento === 'Amarilla' || tipo_evento === 'Quitar Amarilla') columnaStats = 'amarillas';
     if (tipo_evento === 'Roja' || tipo_evento === 'Quitar Roja') columnaStats = 'rojas';
     
@@ -44,15 +44,17 @@ export default defineEventHandler(async (event) => {
     }
 
     // 4. Actualizar marcador del partido si es un gol
-    if (tipo_evento === 'Gol') {
+    if (tipo_evento === 'Gol' || tipo_evento === 'Quitar Gol') {
       // Necesitamos saber si el jugador es del local o visitante
       const [partidos] = await db.query('SELECT equipo_local_id, equipo_visitante_id FROM partidos WHERE id = ?', [partido_id]);
       if (partidos.length > 0) {
         const partido = partidos[0];
+        const operador = tipo_evento === 'Gol' ? '+ 1' : '- 1';
+        
         if (partido.equipo_local_id === jugador.equipo_id) {
-          await db.query('UPDATE partidos SET goles_local = goles_local + 1 WHERE id = ?', [partido_id]);
+          await db.query(`UPDATE partidos SET goles_local = GREATEST(0, goles_local ${operador}) WHERE id = ?`, [partido_id]);
         } else if (partido.equipo_visitante_id === jugador.equipo_id) {
-          await db.query('UPDATE partidos SET goles_visitante = goles_visitante + 1 WHERE id = ?', [partido_id]);
+          await db.query(`UPDATE partidos SET goles_visitante = GREATEST(0, goles_visitante ${operador}) WHERE id = ?`, [partido_id]);
         }
       }
     }
