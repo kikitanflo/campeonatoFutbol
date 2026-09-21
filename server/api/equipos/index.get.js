@@ -10,7 +10,10 @@ export default defineEventHandler(async (event) => {
         nombre as name, 
         logo_url, 
         puntos as pts, 
-        partidos_jugados as pj, 
+        partidos_jugados as pj,
+        partidos_ganados as g,
+        partidos_empatados as e,
+        partidos_perdidos as p,
         goles_favor as gf, 
         goles_contra as gc,
         (goles_favor - goles_contra) as dg
@@ -18,14 +21,11 @@ export default defineEventHandler(async (event) => {
       ORDER BY puntos DESC, dg DESC, goles_favor DESC
     `);
     
-    // Si queremos calcular Ganados, Empatados, Perdidos, normalmente se guardan o se calculan desde los partidos
-    // Como esta es una estructura sencilla, podemos asumir valores temporales o dejarlos en 0 por ahora
-    // ya que la tabla se actualizará automáticamente cuando hagamos la lógica de cargar planillas.
     return rows.map(team => ({
       ...team,
-      g: 0, // Ganados (lo calcularemos luego de los partidos)
-      e: 0, // Empatados
-      p: 0  // Perdidos
+      g: team.g || 0,
+      e: team.e || 0,
+      p: team.p || 0
     }));
   } catch (error) {
     console.error('DB Error:', error);
