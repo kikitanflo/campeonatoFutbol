@@ -25,9 +25,6 @@ export default defineEventHandler(async (event) => {
       console.log('Error verificando columnas:', e.message);
     }
 
-    // 1. Marcar partido como finalizado y guardar el informe
-    await db.query('UPDATE partidos SET estado = "Finalizado", informe = ? WHERE id = ?', [informe || null, partido_id]);
-
     // 2. Obtener info del partido
     const [partidosInfo] = await db.query(`
       SELECT p.*, 
@@ -40,6 +37,12 @@ export default defineEventHandler(async (event) => {
     
     if (partidosInfo.length === 0) throw new Error('Partido no encontrado');
     const partido = partidosInfo[0];
+
+    // Verificar si el partido ya estaba finalizado para no duplicar puntos
+    const wasAlreadyFinalized = partido.estado === 'Finalizado';
+
+    // 1. Marcar partido como finalizado y guardar el informe
+    await db.query('UPDATE partidos SET estado = "Finalizado", informe = ? WHERE id = ?', [informe || null, partido_id]);
 
     // 2.5. Actualizar la tabla de Posiciones (Estadísticas de los Equipos)
     const gl = partido.goles_local || 0;
@@ -58,23 +61,25 @@ export default defineEventHandler(async (event) => {
       ptsLocal = 1; ptsVisit = 1; peLocal = 1; peVisit = 1;
     }
 
-    // Actualizar Local
-    await db.query(`
-      UPDATE equipos 
-      SET puntos = puntos + ?, partidos_jugados = partidos_jugados + 1, 
-          partidos_ganados = partidos_ganados + ?, partidos_empatados = partidos_empatados + ?, partidos_perdidos = partidos_perdidos + ?,
-          goles_favor = goles_favor + ?, goles_contra = goles_contra + ?
-      WHERE id = ?
-    `, [ptsLocal, pgLocal, peLocal, ppLocal, gl, gv, partido.equipo_local_id]);
+    if (!wasAlreadyFinalized) {
+      // Actualizar Local
+      await db.query(`
+        UPDATE equipos 
+        SET puntos = puntos + ?, partidos_jugados = partidos_jugados + 1, 
+            partidos_ganados = partidos_ganados + ?, partidos_empatados = partidos_empatados + ?, partidos_perdidos = partidos_perdidos + ?,
+            goles_favor = goles_favor + ?, goles_contra = goles_contra + ?
+        WHERE id = ?
+      `, [ptsLocal, pgLocal, peLocal, ppLocal, gl, gv, partido.equipo_local_id]);
 
-    // Actualizar Visitante
-    await db.query(`
-      UPDATE equipos 
-      SET puntos = puntos + ?, partidos_jugados = partidos_jugados + 1, 
-          partidos_ganados = partidos_ganados + ?, partidos_empatados = partidos_empatados + ?, partidos_perdidos = partidos_perdidos + ?,
-          goles_favor = goles_favor + ?, goles_contra = goles_contra + ?
-      WHERE id = ?
-    `, [ptsVisit, pgVisit, peVisit, ppVisit, gv, gl, partido.equipo_visitante_id]);
+      // Actualizar Visitante
+      await db.query(`
+        UPDATE equipos 
+        SET puntos = puntos + ?, partidos_jugados = partidos_jugados + 1, 
+            partidos_ganados = partidos_ganados + ?, partidos_empatados = partidos_empatados + ?, partidos_perdidos = partidos_perdidos + ?,
+            goles_favor = goles_favor + ?, goles_contra = goles_contra + ?
+        WHERE id = ?
+      `, [ptsVisit, pgVisit, peVisit, ppVisit, gv, gl, partido.equipo_visitante_id]);
+    }
 
     // 3. Obtener todos los eventos de este partido
     const [eventos] = await db.query(`
