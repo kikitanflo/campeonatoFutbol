@@ -24,7 +24,9 @@ export default defineEventHandler(async (event) => {
   // Si es dirigente, forzamos a que solo pueda agregar a su propio equipo
   const targetTeamId = user.rol === 'dirigente' ? user.equipo_id : equipo_id;
 
-  if (!targetTeamId || !name || !dorsal) {
+  const finalDorsal = dorsal ? Number(dorsal) : 0;
+
+  if (!targetTeamId || !name) {
     throw createError({ statusCode: 400, statusMessage: 'Datos incompletos' });
   }
 
@@ -40,7 +42,7 @@ export default defineEventHandler(async (event) => {
     // Insertar jugador
     const [result] = await db.query(
       'INSERT INTO jugadores (equipo_id, nombre, dorsal) VALUES (?, ?, ?)',
-      [targetTeamId, name, dorsal]
+      [targetTeamId, name, finalDorsal]
     );
 
     return { 

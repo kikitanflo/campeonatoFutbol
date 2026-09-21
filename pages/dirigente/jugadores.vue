@@ -18,8 +18,8 @@
             <input type="text" v-model="nuevoJugador.name" class="form-control" required placeholder="Ej: Lionel Messi">
           </div>
           <div class="form-group">
-            <label>Dorsal (Número)</label>
-            <input type="number" v-model="nuevoJugador.dorsal" class="form-control" required placeholder="Ej: 10" min="1" max="99">
+            <label>Dorsal (Opcional)</label>
+            <input type="number" v-model="nuevoJugador.dorsal" class="form-control" placeholder="Dejar en blanco si no aplica">
           </div>
           
           <div v-if="mensaje" :class="['alert', errorForm ? 'alert-danger' : 'alert-success']">
@@ -52,7 +52,7 @@
             </thead>
             <tbody>
               <tr v-for="jugador in jugadores" :key="jugador.id">
-                <td style="font-weight: bold;">{{ jugador.dorsal }}</td>
+                <td style="font-weight: bold; color: #6b7280;">{{ jugador.dorsal == 0 ? '-' : jugador.dorsal }}</td>
                 <td style="text-align: left;">{{ jugador.nombre }}</td>
                 <td>
                   <span title="Goles">⚽ {{ jugador.goles }}</span> | 

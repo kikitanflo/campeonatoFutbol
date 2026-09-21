@@ -58,7 +58,8 @@
           <div class="player-list">
             <div v-for="jugador in partido.jugadores_local" :key="jugador.id" class="player-item">
               <div class="player-info">
-                <span class="dorsal">{{ jugador.dorsal }}</span>
+                <span class="dorsal" v-if="jugador.dorsal != 0">{{ jugador.dorsal }}</span>
+                <span class="dorsal" v-else>-</span>
                 <span class="nombre">{{ jugador.nombre }}</span>
                 <div class="match-stats">
                   <span v-if="jugador.goles_partido > 0">⚽ {{ jugador.goles_partido }}</span>
@@ -86,7 +87,8 @@
           <div class="player-list">
             <div v-for="jugador in partido.jugadores_visitante" :key="jugador.id" class="player-item">
               <div class="player-info">
-                <span class="dorsal">{{ jugador.dorsal }}</span>
+                <span class="dorsal" v-if="jugador.dorsal != 0">{{ jugador.dorsal }}</span>
+                <span class="dorsal" v-else>-</span>
                 <span class="nombre">{{ jugador.nombre }}</span>
                 <div class="match-stats">
                   <span v-if="jugador.goles_partido > 0">⚽ {{ jugador.goles_partido }}</span>

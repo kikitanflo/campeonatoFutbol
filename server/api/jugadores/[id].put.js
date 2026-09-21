@@ -22,7 +22,9 @@ export default defineEventHandler(async (event) => {
   const body = await readBody(event);
   const { name, dorsal } = body;
 
-  if (!name || !dorsal) {
+  const finalDorsal = dorsal ? Number(dorsal) : 0;
+
+  if (!name) {
     throw createError({ statusCode: 400, statusMessage: 'Datos incompletos' });
   }
 
@@ -39,7 +41,7 @@ export default defineEventHandler(async (event) => {
     }
     
     // Actualizar jugador
-    await db.query('UPDATE jugadores SET nombre = ?, dorsal = ? WHERE id = ?', [name, dorsal, jugadorId]);
+    await db.query('UPDATE jugadores SET nombre = ?, dorsal = ? WHERE id = ?', [name, finalDorsal, jugadorId]);
 
     return { success: true, message: 'Jugador actualizado exitosamente' };
 
