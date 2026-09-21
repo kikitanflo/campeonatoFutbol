@@ -16,12 +16,14 @@
           <div class="jornada-badge">Jornada {{ partido.jornada }}</div>
           <div class="partido-teams">
             <div class="team">
-              <div class="team-logo-placeholder"></div>
+              <img v-if="partido.local_logo" :src="partido.local_logo" alt="Logo" class="team-logo" />
+              <div v-else class="team-logo-placeholder"></div>
               <span class="team-name">{{ partido.local_nombre }}</span>
             </div>
             <div class="vs">VS</div>
             <div class="team">
-              <div class="team-logo-placeholder"></div>
+              <img v-if="partido.visitante_logo" :src="partido.visitante_logo" alt="Logo" class="team-logo" />
+              <div v-else class="team-logo-placeholder"></div>
               <span class="team-name">{{ partido.visitante_nombre }}</span>
             </div>
           </div>
@@ -92,6 +94,7 @@ h2 { font-weight: 800; color: #111827; }
 .jornada-badge { display: inline-block; background: #e5e7eb; color: #374151; padding: 0.25rem 0.75rem; border-radius: 999px; font-size: 0.8rem; font-weight: 700; margin-bottom: 1rem; }
 .partido-teams { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
 .team { text-align: center; flex: 1; }
+.team-logo { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; margin: 0 auto 0.5rem auto; display: block; border: 1px solid #d1d5db; background-color: white; }
 .team-logo-placeholder { width: 48px; height: 48px; background: #f3f4f6; border-radius: 50%; margin: 0 auto 0.5rem auto; border: 1px dashed #d1d5db; }
 .team-name { font-weight: 700; color: #111827; display: block; font-size: 0.95rem; }
 .vs { font-weight: 900; color: var(--text-muted); font-size: 1.2rem; padding: 0 1rem; }
