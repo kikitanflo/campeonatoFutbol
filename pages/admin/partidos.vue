@@ -91,6 +91,7 @@
                 {{ partido.fecha ? new Date(partido.fecha.replace(' ', 'T')).toLocaleString() : 'Sin fecha' }}
                 <button v-if="partido.estado === 'Pendiente'" @click="startEditFull(partido)" class="btn-icon" title="Editar Partido Completo">✏️</button>
                 <button @click="startEdit(partido)" class="btn-icon" title="Asignar o Editar Fecha">📅</button>
+                <button v-if="partido.estado === 'Finalizado'" @click="reabrirPartido(partido.id)" class="btn-icon" title="Reabrir Partido Finalizado">🔓</button>
               </span>
             </div>
           </div>
@@ -198,6 +199,26 @@ async function saveFecha(partido) {
     }
   } catch (err) {
     alert('Error inesperado al actualizar');
+  }
+}
+
+async function reabrirPartido(id) {
+  if (!confirm('¿Estás seguro de reabrir este partido? El árbitro podrá volver a editarlo.')) return;
+  
+  try {
+    const { error } = await useFetch('/api/admin/partidos/reabrir', {
+      method: 'POST',
+      body: { partido_id: id }
+    });
+
+    if (error.value) {
+      alert(error.value.data?.statusMessage || 'Error al reabrir el partido');
+    } else {
+      alert('¡Partido reabierto! El árbitro ya puede volver a usar la planilla.');
+      await refresh();
+    }
+  } catch (err) {
+    alert('Error inesperado al reabrir');
   }
 }
 
