@@ -43,7 +43,7 @@
                 <td style="font-weight: bold; text-align: left;">{{ team.name }}</td>
                 <td>
                   <button class="btn-sm btn-edit" @click="editarEquipo(team)">Editar</button>
-                  <button class="btn-sm btn-delete">Eliminar</button>
+                  <button class="btn-sm btn-delete" @click="eliminarEquipo(team.id, team.name)">Eliminar</button>
                 </td>
               </tr>
               <tr v-if="!equipos || equipos.length === 0">
@@ -128,6 +128,35 @@ async function editarEquipo(team) {
   } catch (err) {
     errorForm.value = true;
     mensaje.value = 'Ocurrió un error inesperado';
+  } finally {
+    loading.value = false;
+  }
+}
+
+async function eliminarEquipo(id, nombre) {
+  if (!confirm(`¿Estás SEGURO de eliminar el equipo "${nombre}"? Esta acción no se puede deshacer.`)) return;
+
+  loading.value = true;
+  mensaje.value = '';
+  errorForm.value = false;
+
+  try {
+    const { data, error } = await useFetch('/api/equipos', {
+      method: 'DELETE',
+      body: { id }
+    });
+
+    if (error.value) {
+      errorForm.value = true;
+      mensaje.value = error.value.data?.statusMessage || 'Error al eliminar el equipo';
+    } else {
+      mensaje.value = '¡Equipo eliminado con éxito!';
+      await refresh();
+      setTimeout(() => { mensaje.value = ''; }, 4000);
+    }
+  } catch (err) {
+    errorForm.value = true;
+    mensaje.value = 'Ocurrió un error al intentar eliminar';
   } finally {
     loading.value = false;
   }
