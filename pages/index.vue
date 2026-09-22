@@ -130,7 +130,15 @@
                 <div class="card-logo-placeholder" v-else><i class="fas fa-shield-alt"></i></div>
                 <span class="team-name">{{ partido.local_nombre }}</span>
               </div>
-              <div class="vs-badge">VS</div>
+              
+              <div class="vs-badge" v-if="partido.estado === 'Finalizado' || partido.estado === 'En Curso'">
+                <span class="match-score">{{ partido.goles_local }}</span>
+                <span class="score-dash">-</span>
+                <span class="match-score">{{ partido.goles_visitante }}</span>
+              </div>
+              <div class="vs-badge" v-else-if="partido.estado === 'Descansa'">-</div>
+              <div class="vs-badge" v-else>VS</div>
+
               <div class="team team-visitor">
                 <img :src="partido.visitante_logo" v-if="partido.visitante_logo" class="card-logo" alt="">
                 <div class="card-logo-placeholder" v-else><i class="fas fa-shield-alt"></i></div>
@@ -619,7 +627,13 @@ function formatHeroTitle(title) {
   font-size: 0.9rem;
   min-width: 40px;
   text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
 }
+.match-score { color: var(--primary-color); font-size: 1.1rem; }
+.score-dash { color: #d1d5db; }
 
 .schedule-footer {
   text-align: center;
