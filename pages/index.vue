@@ -156,7 +156,7 @@
       </section>
 
       <!-- Patrocinadores Section -->
-      <section class="sponsors-section">
+      <section v-if="data?.configuracion?.show_sponsors !== 'false'" class="sponsors-section">
         <h3 class="sponsors-title">NUESTROS PATROCINADORES</h3>
         
         <div class="sponsors-carousel">

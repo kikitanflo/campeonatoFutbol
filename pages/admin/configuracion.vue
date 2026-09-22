@@ -45,6 +45,15 @@
           <textarea v-model="form.global_news" class="form-control" rows="3" placeholder="Ej: Las inscripciones cierran este viernes."></textarea>
         </div>
 
+        <div class="form-group mb-3 mt-4 border-top pt-3">
+          <label style="color: var(--primary-color);"><strong>👁️ Visibilidad de Patrocinadores</strong></label>
+          <p class="text-muted small mb-2">Decide si quieres mostrar u ocultar la sección de Patrocinadores en la página principal.</p>
+          <select v-model="form.show_sponsors" class="form-control">
+            <option value="true">✅ Mostrar Patrocinadores</option>
+            <option value="false">❌ Ocultar Patrocinadores</option>
+          </select>
+        </div>
+
         <div class="mt-4">
           <button type="submit" class="btn-primary" :disabled="guardando" style="width: 100%; padding: 1rem; font-size: 1.1rem;">
             {{ guardando ? 'Guardando...' : '💾 Guardar Textos' }}
@@ -123,7 +132,8 @@ const form = ref({
   ticker_label: '',
   hero_btn1_text: '',
   hero_btn2_text: '',
-  global_news: ''
+  global_news: '',
+  show_sponsors: 'true'
 });
 
 const guardando = ref(false);
@@ -157,6 +167,7 @@ const { pending } = await useAsyncData('config', async () => {
     form.value.hero_btn1_text = res.configuracion.hero_btn1_text || '';
     form.value.hero_btn2_text = res.configuracion.hero_btn2_text || '';
     form.value.global_news = res.configuracion.global_news || '';
+    form.value.show_sponsors = res.configuracion.show_sponsors || 'true';
   }
   return true;
 });
