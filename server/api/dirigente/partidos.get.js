@@ -7,6 +7,15 @@ export default defineEventHandler(async (event) => {
   if (user.rol !== 'dirigente' || !user.equipo_id) throw createError({ statusCode: 403 });
 
   try {
+    // Asegurar que la tabla exista
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS convocatorias (
+          partido_id INT NOT NULL,
+          jugador_id INT NOT NULL,
+          PRIMARY KEY (partido_id, jugador_id)
+      )
+    `);
+
     const [partidos] = await db.query(`
       SELECT p.id, p.jornada, p.estado, p.fecha,
              el.nombre as local_nombre, ev.nombre as visitante_nombre,

@@ -33,7 +33,7 @@
         <div v-if="pending" class="text-center">Cargando...</div>
         
         <div v-else class="partidos-list">
-          <div v-for="partido in partidos" :key="partido.id" class="partido-item">
+          <div v-for="partido in (partidos || [])" :key="partido.id" class="partido-item">
             <div class="partido-info">
               <span class="jornada">Jornada {{ partido.jornada }}</span>
               <strong>{{ partido.local_nombre }} vs {{ partido.visitante_nombre }}</strong>
@@ -46,7 +46,7 @@
             </NuxtLink>
           </div>
           
-          <div v-if="partidos.length === 0" class="text-muted text-center py-4">
+          <div v-if="!partidos || partidos.length === 0" class="text-muted text-center py-4">
             No tienes partidos programados.
           </div>
         </div>
