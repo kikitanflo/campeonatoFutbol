@@ -21,16 +21,16 @@
         <div class="glass-card team-hero mb-4 mt-4">
           <div class="team-hero-content">
             <div class="team-logo-hero">
-              <img v-if="equipo.logo_url" :src="equipo.logo_url" alt="Logo" class="logo-img" />
-              <span v-else class="logo-placeholder">{{ equipo.nombre.charAt(0) }}</span>
+              <img v-if="equipo?.logo_url" :src="equipo.logo_url" alt="Logo" class="logo-img" />
+              <span v-else class="logo-placeholder">{{ equipo?.nombre ? equipo.nombre.charAt(0) : 'E' }}</span>
             </div>
             <div class="team-details">
-              <h1 class="team-name">{{ equipo.nombre }}</h1>
+              <h1 class="team-name">{{ equipo?.nombre || 'Equipo' }}</h1>
               <div class="team-stats-row">
-                <div class="stat-pill"><span class="label">PTS</span> <span class="val">{{ equipo.puntos }}</span></div>
-                <div class="stat-pill"><span class="label">PJ</span> <span class="val">{{ equipo.partidos_jugados || 0 }}</span></div>
-                <div class="stat-pill"><span class="label">GF</span> <span class="val">{{ equipo.goles_favor || 0 }}</span></div>
-                <div class="stat-pill"><span class="label">GC</span> <span class="val">{{ equipo.goles_contra || 0 }}</span></div>
+                <div class="stat-pill"><span class="label">PTS</span> <span class="val">{{ equipo?.puntos || 0 }}</span></div>
+                <div class="stat-pill"><span class="label">PJ</span> <span class="val">{{ equipo?.partidos_jugados || 0 }}</span></div>
+                <div class="stat-pill"><span class="label">GF</span> <span class="val">{{ equipo?.goles_favor || 0 }}</span></div>
+                <div class="stat-pill"><span class="label">GC</span> <span class="val">{{ equipo?.goles_contra || 0 }}</span></div>
               </div>
             </div>
           </div>
@@ -46,23 +46,23 @@
             </div>
             
             <div class="match-teams">
-              <div class="team-side" :class="{'is-this-team': partido.equipo_local_id === equipo.id}">
+              <div class="team-side" :class="{'is-this-team': partido.equipo_local_id === equipo?.id}">
                 <span class="t-name">{{ partido.local_nombre }}</span>
-                <span v-if="partido.estado === 'Finalizado'" class="t-score" :class="{'winner': partido.goles_local > partido.goles_visitante}">{{ partido.goles_local }}</span>
+                <span v-if="partido.estado === 'Finalizado'" class="t-score" :class="{'winner': (partido.goles_local || 0) > (partido.goles_visitante || 0)}">{{ partido.goles_local || 0 }}</span>
               </div>
               <div class="vs-divider">
                 <span v-if="partido.estado !== 'Finalizado'" class="vs-badge">VS</span>
                 <span v-else class="vs-dash">-</span>
               </div>
-              <div class="team-side right" :class="{'is-this-team': partido.equipo_visitante_id === equipo.id}">
-                <span v-if="partido.estado === 'Finalizado'" class="t-score" :class="{'winner': partido.goles_visitante > partido.goles_local}">{{ partido.goles_visitante }}</span>
+              <div class="team-side right" :class="{'is-this-team': partido.equipo_visitante_id === equipo?.id}">
+                <span v-if="partido.estado === 'Finalizado'" class="t-score" :class="{'winner': (partido.goles_visitante || 0) > (partido.goles_local || 0)}">{{ partido.goles_visitante || 0 }}</span>
                 <span class="t-name">{{ partido.visitante_nombre }}</span>
               </div>
             </div>
 
             <div class="match-footer">
-              <span class="status-badge" :class="'status-' + partido.estado.replace(' ', '-').toLowerCase()">
-                {{ partido.estado }}
+              <span class="status-badge" :class="'status-' + (partido.estado ? partido.estado.replace(' ', '-').toLowerCase() : 'pendiente')">
+                {{ partido.estado || 'Pendiente' }}
               </span>
             </div>
           </div>
