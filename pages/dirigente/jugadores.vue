@@ -98,6 +98,13 @@ async function guardarJugador() {
   mensaje.value = '';
   errorForm.value = false;
 
+  if (!session.value?.equipo_id) {
+    errorForm.value = true;
+    mensaje.value = 'Error de sesión: Por favor Cierra Sesión y vuelve a ingresar para aplicar los cambios.';
+    loading.value = false;
+    return;
+  }
+
   try {
     const url = editandoId.value ? `/api/jugadores/${editandoId.value}` : '/api/jugadores';
     const method = editandoId.value ? 'PUT' : 'POST';
