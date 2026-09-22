@@ -220,7 +220,7 @@ function imprimirPlanilla() {
 .player-item { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 6px; }
 .player-info { display: flex; align-items: center; gap: 0.75rem; font-size: 0.95rem; }
 .dorsal { background: #374151; color: white; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 0.75rem; font-weight: 700; flex-shrink: 0; }
-.nombre { font-weight: 600; color: #111827; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100px; }
+.nombre { font-weight: 600; color: #111827; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex-grow: 1; min-width: 0; padding-right: 0.5rem; }
 .match-stats { display: flex; gap: 0.25rem; font-size: 0.8rem; margin-left: 0.25rem; }
 
 .informe-section { background: #f9fafb; padding: 1.5rem; border-radius: 8px; border: 1px solid var(--border-color); }
