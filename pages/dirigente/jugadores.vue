@@ -106,7 +106,8 @@ async function guardarJugador() {
       method,
       body: { 
         name: nuevoJugador.value.name,
-        dorsal: nuevoJugador.value.dorsal
+        dorsal: nuevoJugador.value.dorsal,
+        equipo_id: session.value?.equipo_id
       }
     });
 
