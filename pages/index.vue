@@ -11,12 +11,12 @@
                 <span class="ticker-jornada" v-if="partido.jornada">J{{ partido.jornada }}</span>
                 <span class="status" :class="{'text-live': partido.estado === 'En Curso', 'text-scheduled': partido.estado === 'Pendiente'}">
                   <i class="fas fa-circle blink" v-if="partido.estado === 'En Curso'"></i>
-                  {{ partido.estado === 'En Curso' ? 'EN VIVO' : (partido.estado === 'Finalizado' ? 'FINAL' : formatTickerDate(partido.fecha)) }}
+                  {{ partido.estado === 'En Curso' ? 'EN VIVO' : formatTickerDate(partido.fecha) }}
                 </span>
                 <div class="teams">
                   <img :src="partido.local_logo" v-if="partido.local_logo" class="ticker-logo" alt="">
                   <span class="team-name">{{ partido.local_nombre }}</span> 
-                  <span class="score" v-if="partido.estado === 'En Curso' || partido.estado === 'Finalizado'">{{ partido.goles_local }} - {{ partido.goles_visitante }}</span>
+                  <span class="score" v-if="partido.estado === 'En Curso'">{{ partido.goles_local }} - {{ partido.goles_visitante }}</span>
                   <span class="score pending" v-else>VS</span>
                   <span class="team-name">{{ partido.visitante_nombre }}</span>
                   <img :src="partido.visitante_logo" v-if="partido.visitante_logo" class="ticker-logo" alt="">
@@ -117,7 +117,7 @@
                 <span class="team-name">{{ partido.local_nombre }}</span>
               </div>
               
-              <div class="vs-badge" v-if="partido.estado === 'Finalizado' || partido.estado === 'En Curso'">
+              <div class="vs-badge" v-if="partido.estado === 'En Curso'">
                 <span class="match-score">{{ partido.goles_local }}</span>
                 <span class="score-dash">-</span>
                 <span class="match-score">{{ partido.goles_visitante }}</span>
@@ -133,7 +133,7 @@
             
             <div class="schedule-footer">
               <span class="status-badge" :class="'status-' + partido.estado.replace(' ', '-').toLowerCase()">
-                {{ partido.estado === 'En Curso' ? 'EN VIVO' : (partido.estado === 'Pendiente' ? 'PROGRAMADO' : partido.estado) }}
+                {{ partido.estado === 'En Curso' ? 'EN VIVO' : 'PROGRAMADO' }}
               </span>
             </div>
           </div>
@@ -141,8 +141,8 @@
 
         <div v-else class="empty-matches-box">
           <div class="empty-icon">📅</div>
-          <p class="empty-text">No hay partidos programados para la Jornada {{ displayedJornada }} todavía.</p>
-          <p class="empty-sub">Usa los botones de arriba para navegar a las jornadas con partidos programados.</p>
+          <p class="empty-text">No hay partidos pendientes para la Jornada {{ displayedJornada }}.</p>
+          <p class="empty-sub">Todos los partidos de esta jornada ya han finalizado o no han sido programados aún.</p>
         </div>
       </section>
 

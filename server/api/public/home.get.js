@@ -30,8 +30,8 @@ export default defineEventHandler(async (event) => {
     const [maxJornadaData] = await db.query(`SELECT MAX(jornada) as max_jornada FROM partidos`);
     const maxJornada = maxJornadaData[0]?.max_jornada || 1;
 
-    // 2. Partidos PROGRAMADOS para el Ticker (donde rotan de lado a lado)
-    // Solo partidos que tienen fecha asignada O están En Curso O Finalizados
+    // 2. Partidos PROGRAMADOS PENDIENTES para el Ticker (donde rotan de lado a lado)
+    // Solo partidos que tienen fecha asignada O están En Curso, EXCLUYENDO Finalizados
     const [tickerPartidos] = await db.query(`
       SELECT p.id, p.jornada, p.estado, p.fecha,
              el.nombre as local_nombre, el.logo_url as local_logo, p.goles_local,
@@ -39,19 +39,17 @@ export default defineEventHandler(async (event) => {
       FROM partidos p
       JOIN equipos el ON p.equipo_local_id = el.id
       JOIN equipos ev ON p.equipo_visitante_id = ev.id
-      WHERE (p.fecha IS NOT NULL OR p.estado IN ('En Curso', 'Finalizado'))
+      WHERE (p.fecha IS NOT NULL OR p.estado = 'En Curso') AND p.estado != 'Finalizado'
       ORDER BY 
         CASE 
           WHEN p.estado = 'En Curso' THEN 1
-          WHEN p.estado = 'Pendiente' THEN 2
-          WHEN p.estado = 'Finalizado' THEN 3
-          ELSE 4
+          ELSE 2
         END,
         p.fecha ASC
       LIMIT 25
     `);
 
-    // 3. Partidos PROGRAMADOS de la Jornada Actual (para la grilla principal)
+    // 3. Partidos PROGRAMADOS PENDIENTES de la Jornada Actual (para la grilla principal)
     const [jornadaMatches] = await db.query(`
       SELECT p.id, p.jornada, p.estado, p.fecha,
              el.nombre as local_nombre, el.logo_url as local_logo, p.goles_local,
@@ -59,13 +57,11 @@ export default defineEventHandler(async (event) => {
       FROM partidos p
       JOIN equipos el ON p.equipo_local_id = el.id
       JOIN equipos ev ON p.equipo_visitante_id = ev.id
-      WHERE p.jornada = ? AND (p.fecha IS NOT NULL OR p.estado IN ('En Curso', 'Finalizado'))
+      WHERE p.jornada = ? AND (p.fecha IS NOT NULL OR p.estado = 'En Curso') AND p.estado != 'Finalizado'
       ORDER BY 
         CASE 
           WHEN p.estado = 'En Curso' THEN 1
-          WHEN p.estado = 'Pendiente' THEN 2
-          WHEN p.estado = 'Finalizado' THEN 3
-          ELSE 4
+          ELSE 2
         END,
         p.fecha ASC
     `, [currentJornada]);

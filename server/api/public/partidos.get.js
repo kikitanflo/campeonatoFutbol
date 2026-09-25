@@ -12,13 +12,11 @@ export default defineEventHandler(async (event) => {
       FROM partidos p
       JOIN equipos el ON p.equipo_local_id = el.id
       JOIN equipos ev ON p.equipo_visitante_id = ev.id
-      WHERE p.jornada = ? AND (p.fecha IS NOT NULL OR p.estado IN ('En Curso', 'Finalizado'))
+      WHERE p.jornada = ? AND (p.fecha IS NOT NULL OR p.estado = 'En Curso') AND p.estado != 'Finalizado'
       ORDER BY 
         CASE 
           WHEN p.estado = 'En Curso' THEN 1
-          WHEN p.estado = 'Pendiente' THEN 2
-          WHEN p.estado = 'Finalizado' THEN 3
-          ELSE 4
+          ELSE 2
         END,
         p.fecha ASC
     `, [jornada]);
