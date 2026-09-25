@@ -12,42 +12,16 @@ export default defineEventHandler(async (event) => {
       FROM partidos p
       JOIN equipos el ON p.equipo_local_id = el.id
       JOIN equipos ev ON p.equipo_visitante_id = ev.id
-      WHERE p.jornada = ?
+      WHERE p.jornada = ? AND (p.fecha IS NOT NULL OR p.estado IN ('En Curso', 'Finalizado'))
       ORDER BY 
         CASE 
           WHEN p.estado = 'En Curso' THEN 1
-          WHEN p.estado = 'Programado' THEN 2
+          WHEN p.estado = 'Pendiente' THEN 2
           WHEN p.estado = 'Finalizado' THEN 3
           ELSE 4
         END,
         p.fecha ASC
     `, [jornada]);
-
-    // Equipos que descansan
-    const [descansan] = await db.query(`
-      SELECT id, nombre, logo_url
-      FROM equipos
-      WHERE id NOT IN (
-        SELECT equipo_local_id FROM partidos WHERE jornada = ?
-        UNION
-        SELECT equipo_visitante_id FROM partidos WHERE jornada = ?
-      )
-    `, [jornada, jornada]);
-
-    descansan.forEach(eq => {
-      partidos.push({
-        id: 'descanso-' + eq.id,
-        jornada: jornada,
-        estado: 'Descansa',
-        fecha: null,
-        local_nombre: eq.nombre,
-        local_logo: eq.logo_url,
-        visitante_nombre: 'DESCANSO',
-        visitante_logo: null,
-        goles_local: null,
-        goles_visitante: null
-      });
-    });
 
     return { partidos };
   } catch (error) {

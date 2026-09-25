@@ -6,35 +6,21 @@
         <div class="ticker-label">{{ data?.configuracion?.ticker_label ?? '⚽ LO ÚLTIMO' }}</div>
         <div class="ticker-scroll">
           <div class="ticker-content">
-            <div v-for="partido in data.partidos" :key="partido.id" class="match-item">
-              <span class="status" :class="{'text-live': partido.estado === 'En Curso', 'text-scheduled': partido.estado === 'Programado' || partido.estado === 'Pendiente'}">
-                <i class="fas fa-circle blink" v-if="partido.estado === 'En Curso'"></i>
-                {{ partido.estado === 'En Curso' ? 'EN VIVO' : ((partido.estado === 'Programado' || partido.estado === 'Pendiente') && partido.fecha ? formatTime(partido.fecha) : partido.estado.toUpperCase()) }}
-              </span>
-              <div class="teams">
-                <img :src="partido.local_logo" v-if="partido.local_logo" class="ticker-logo" alt="">
-                <span class="team-name">{{ partido.local_nombre }}</span> 
-                <span class="score" v-if="partido.estado !== 'Programado' && partido.estado !== 'Pendiente' && partido.estado !== 'Descansa'">{{ partido.goles_local }} - {{ partido.goles_visitante }}</span>
-                <span class="score pending" v-else-if="partido.estado === 'Descansa'">-</span>
-                <span class="score pending" v-else>VS</span>
-                <span class="team-name">{{ partido.visitante_nombre }}</span>
-                <img :src="partido.visitante_logo" v-if="partido.visitante_logo" class="ticker-logo" alt="">
-              </div>
-            </div>
-            <!-- Duplicate for infinite scroll effect -->
-            <div v-for="partido in data.partidos" :key="'dup-'+partido.id" class="match-item">
-              <span class="status" :class="{'text-live': partido.estado === 'En Curso', 'text-scheduled': partido.estado === 'Programado' || partido.estado === 'Pendiente'}">
-                <i class="fas fa-circle blink" v-if="partido.estado === 'En Curso'"></i>
-                {{ partido.estado === 'En Curso' ? 'EN VIVO' : ((partido.estado === 'Programado' || partido.estado === 'Pendiente') && partido.fecha ? formatTime(partido.fecha) : partido.estado.toUpperCase()) }}
-              </span>
-              <div class="teams">
-                <img :src="partido.local_logo" v-if="partido.local_logo" class="ticker-logo" alt="">
-                <span class="team-name">{{ partido.local_nombre }}</span> 
-                <span class="score" v-if="partido.estado !== 'Programado' && partido.estado !== 'Pendiente' && partido.estado !== 'Descansa'">{{ partido.goles_local }} - {{ partido.goles_visitante }}</span>
-                <span class="score pending" v-else-if="partido.estado === 'Descansa'">-</span>
-                <span class="score pending" v-else>VS</span>
-                <span class="team-name">{{ partido.visitante_nombre }}</span>
-                <img :src="partido.visitante_logo" v-if="partido.visitante_logo" class="ticker-logo" alt="">
+            <div v-for="loop in 4" :key="'loop-'+loop" class="ticker-group">
+              <div v-for="partido in data.partidos" :key="'m-'+loop+'-'+partido.id" class="match-item">
+                <span class="ticker-jornada" v-if="partido.jornada">J{{ partido.jornada }}</span>
+                <span class="status" :class="{'text-live': partido.estado === 'En Curso', 'text-scheduled': partido.estado === 'Pendiente'}">
+                  <i class="fas fa-circle blink" v-if="partido.estado === 'En Curso'"></i>
+                  {{ partido.estado === 'En Curso' ? 'EN VIVO' : (partido.estado === 'Finalizado' ? 'FINAL' : formatTickerDate(partido.fecha)) }}
+                </span>
+                <div class="teams">
+                  <img :src="partido.local_logo" v-if="partido.local_logo" class="ticker-logo" alt="">
+                  <span class="team-name">{{ partido.local_nombre }}</span> 
+                  <span class="score" v-if="partido.estado === 'En Curso' || partido.estado === 'Finalizado'">{{ partido.goles_local }} - {{ partido.goles_visitante }}</span>
+                  <span class="score pending" v-else>VS</span>
+                  <span class="team-name">{{ partido.visitante_nombre }}</span>
+                  <img :src="partido.visitante_logo" v-if="partido.visitante_logo" class="ticker-logo" alt="">
+                </div>
               </div>
             </div>
           </div>
@@ -98,7 +84,7 @@
       </section>
 
       <!-- Programación por Jornadas -->
-      <section class="upcoming-matches" v-if="!pending && currentMatches.length">
+      <section class="upcoming-matches" v-if="!pending">
         <div class="section-header" style="display: flex; justify-content: center; align-items: center; gap: 1rem; flex-wrap: wrap;">
           <button class="btn-pagination" @click="changeJornada(displayedJornada - 1)" :disabled="displayedJornada <= 1">
             ⬅ Anterior
@@ -111,16 +97,16 @@
           </button>
         </div>
         
-        <div class="matches-grid" :class="{'loading-matches': isChangingJornada}">
+        <div v-if="currentMatches.length > 0" class="matches-grid" :class="{'loading-matches': isChangingJornada}">
           <div v-for="partido in currentMatches" :key="'sched-'+partido.id" class="schedule-card">
             <div class="schedule-header">
               <span class="schedule-date">
                 <i class="far fa-calendar-alt mr-1"></i>
-                {{ partido.fecha ? formatDate(partido.fecha) : 'Por definir' }}
+                {{ formatDate(partido.fecha) }}
               </span>
               <span class="schedule-time">
                 <i class="far fa-clock mr-1"></i>
-                {{ partido.fecha ? formatTime(partido.fecha) : '--:--' }}
+                {{ formatTime(partido.fecha) }}
               </span>
             </div>
             
@@ -136,7 +122,6 @@
                 <span class="score-dash">-</span>
                 <span class="match-score">{{ partido.goles_visitante }}</span>
               </div>
-              <div class="vs-badge" v-else-if="partido.estado === 'Descansa'">-</div>
               <div class="vs-badge" v-else>VS</div>
 
               <div class="team team-visitor">
@@ -148,10 +133,16 @@
             
             <div class="schedule-footer">
               <span class="status-badge" :class="'status-' + partido.estado.replace(' ', '-').toLowerCase()">
-                {{ partido.estado === 'En Curso' ? 'EN VIVO' : partido.estado }}
+                {{ partido.estado === 'En Curso' ? 'EN VIVO' : (partido.estado === 'Pendiente' ? 'PROGRAMADO' : partido.estado) }}
               </span>
             </div>
           </div>
+        </div>
+
+        <div v-else class="empty-matches-box">
+          <div class="empty-icon">📅</div>
+          <p class="empty-text">No hay partidos programados para la Jornada {{ displayedJornada }} todavía.</p>
+          <p class="empty-sub">Usa los botones de arriba para navegar a las jornadas con partidos programados.</p>
         </div>
       </section>
 
@@ -203,7 +194,7 @@ const isChangingJornada = ref(false);
 watchEffect(() => {
   if (data.value && !pending.value) {
     displayedJornada.value = data.value.currentJornada;
-    currentMatches.value = data.value.partidos || [];
+    currentMatches.value = data.value.jornadaMatches || [];
   }
 });
 
@@ -236,12 +227,22 @@ onMounted(() => {
   }
 });
 
+function formatTickerDate(dateString) {
+  if (!dateString) return 'PROGRAMADO';
+  const d = new Date(dateString.replace(' ', 'T'));
+  const dayName = d.toLocaleDateString('es-ES', { weekday: 'short' });
+  const time = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  return `${dayName.charAt(0).toUpperCase() + dayName.slice(1)} ${time}`;
+}
+
 function formatTime(dateString) {
+  if (!dateString) return '--:--';
   const d = new Date(dateString.replace(' ', 'T'));
   return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 }
 
 function formatDate(dateString) {
+  if (!dateString) return 'Por definir';
   const d = new Date(dateString.replace(' ', 'T'));
   return d.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'short' });
 }
@@ -316,6 +317,46 @@ function formatHeroTitle(title) {
 @keyframes scroll-left {
   0% { transform: translateX(0); }
   100% { transform: translateX(-50%); }
+}
+
+.ticker-group {
+  display: flex;
+  gap: 3rem;
+  align-items: center;
+}
+
+.ticker-jornada {
+  font-size: 0.72rem;
+  font-weight: 800;
+  background: rgba(255, 255, 255, 0.15);
+  color: #fbbf24;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  letter-spacing: 0.5px;
+}
+
+.empty-matches-box {
+  background: white;
+  border-radius: 12px;
+  border: 1px dashed var(--border-color);
+  padding: 3rem 1.5rem;
+  text-align: center;
+  margin-top: 1rem;
+}
+.empty-icon {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+.empty-text {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #374151;
+  margin-bottom: 0.25rem;
+}
+.empty-sub {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-bottom: 0;
 }
 
 .match-item {
