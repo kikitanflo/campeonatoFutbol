@@ -49,3 +49,9 @@ body {
 .text-primary {
   color: var(--primary-color);
 }
+
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
